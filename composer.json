@@ -1,5 +1,5 @@
 {
-    "name": "horde/icalendar",
+    "name": "egroupware/icalendar",
     "description": "iCalendar and vCard library",
     "type": "library",
     "homepage": "https://www.horde.org/libraries/Horde_Icalendar",
