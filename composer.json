@@ -21,7 +21,7 @@
             "role": "developer"
         }
     ],
-    "version": "2.1.9",
+    "version": "2.2.0",
     "time": "2019-02-09",
     "require": {
         "php": "^7 || ^8",
