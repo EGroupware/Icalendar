@@ -727,7 +727,14 @@ class Horde_Icalendar
                     preg_match_all('/' . $separator . '([^' . $separator . ']*)/', $separator . $value, $values);
 
                     foreach ($values[1] as $value) {
-                        $stamp = $this->_parseDateTime($value);
+                        if ($paramValue === 'PERIOD' && ($period = $this->_parsePeriod($value)))
+                        {
+                            $stamp = $period['start'];
+                        }
+                        else
+                        {
+                            $stamp = $this->_parseDateTime($value);
+                        }
                         if (!is_int($stamp)) {
                             continue;
                         }
