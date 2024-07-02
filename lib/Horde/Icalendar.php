@@ -740,7 +740,14 @@ class Horde_Icalendar
                         }
                         $dates[] = array('year' => date('Y', $stamp),
                                          'month' => date('m', $stamp),
-                                         'mday' => date('d', $stamp));
+                                         'mday' => date('d', $stamp)
+	                        )+($paramValue === 'DATE' ? [] : [
+									     'hour' => date('H', $stamp),
+		                                 'minute' => date('i', $stamp),
+		                                 'second' => date('s', $stamp),
+	                        ]+($paramValue === 'PERIOD' ? [] : [
+								'duration' => $period['duration'] ?? $period['end']-$period['start'],
+		                    ]));
                     }
                     $this->setAttribute($tag, isset($dates[0]) ? $dates[0] : null, $params, true, $dates);
                     break;
@@ -1228,7 +1235,7 @@ class Horde_Icalendar
      *
      * @param $text TODO
      *
-     * @return array  TODO
+     * @return array  with values for keys 'start', and either 'duration' or 'end'
      */
     protected function _parsePeriod($text)
     {
