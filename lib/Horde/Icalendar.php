@@ -1409,43 +1409,25 @@ class Horde_Icalendar
      * @param string $text  The Icalendar datetime field value.
      * @param string $tzid  A timezone identifier.
      *
-     * @return integer  A unix timestamp.
+     * @return DateTime
      */
     public function _parseDateTime($text, $tzid = false)
     {
-        $dateParts = explode('T', $text);
-        if (count($dateParts) != 2 && !empty($text)) {
-            // Not a datetime field but may be just a date field.
-            if (!preg_match('/^(\d{4})-?(\d{2})-?(\d{2})$/', $text)) {
-                // Or not
-                return $text;
+
+        $formats = ['Ymd\THis\Z','Ymd\THis\z', 'Ymd\THis', 'Ymd\THi|','Ymd|', 'Y-m-d|'];
+        $date = null;
+        try {
+            $tz = $tzid ? new DateTimeZone($tzid) : new DateTimeZone(date_default_timezone_get());
+        } catch (/*DateInvalidTimeZone*/ Exception $e) {
+            $tz = null;
+        }
+        foreach ($formats as $format) {
+            $date = DateTime::createFromFormat($format, $text, $tz);
+            if($date) {
+                break;
             }
-            $dateParts = array($text, '000000');
         }
-
-        if (!($date = $this->_parseDate($dateParts[0])) ||
-            !($time = $this->_parseTime($dateParts[1]))) {
-            return $text;
-        }
-
-        // Get timezone info for date fields from $tzid and container.
-        $tzoffset = ($time['zone'] == 'Local' && $tzid &&
-                     ($this->_container instanceof Horde_Icalendar))
-                     ? $this->_parseTZID($date, $time, $tzid)
-                     : false;
-        if ($time['zone'] == 'UTC' || $tzoffset !== false) {
-            $result = @gmmktime($time['hour'], $time['minute'], $time['second'],
-                                $date['month'], $date['mday'], $date['year']);
-            if ($result !== false && $tzoffset) {
-                $result -= $tzoffset;
-            }
-        } else {
-            // We don't know the timezone so assume local timezone.
-            $result = @mktime($time['hour'], $time['minute'], $time['second'],
-                              $date['month'], $date['mday'], $date['year']);
-        }
-
-        return ($result !== false) ? $result : $text;
+        return $date ?: $text;
     }
 
     /**
