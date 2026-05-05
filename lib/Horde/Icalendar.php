@@ -1421,6 +1421,7 @@ class Horde_Icalendar
         } catch (/*DateInvalidTimeZone*/ Exception $e) {
             $tz = null;
         }
+        if(substr($text, -1) === 'Z') $tz = new DateTimeZone("UTC");
         foreach ($formats as $format) {
             $date = DateTime::createFromFormat($format, $text, $tz);
             if($date) {

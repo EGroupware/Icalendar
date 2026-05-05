@@ -21,7 +21,7 @@
             "role": "developer"
         }
     ],
-    "version": "2.2.3",
+    "version": "2.2.4",
     "time": "2024-07-02",
     "require": {
         "php": "^7 || ^8",
