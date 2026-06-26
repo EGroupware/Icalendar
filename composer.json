@@ -21,8 +21,8 @@
             "role": "developer"
         }
     ],
-    "version": "2.2.4",
-    "time": "2024-07-02",
+    "version": "2.2.5",
+    "time": "2026-06-26",
     "require": {
         "php": "^7 || ^8",
         "pear-pear.horde.org/horde_date": "^2",

@@ -727,25 +727,26 @@ class Horde_Icalendar
                     preg_match_all('/' . $separator . '([^' . $separator . ']*)/', $separator . $value, $values);
 
                     foreach ($values[1] as $value) {
-                        if ($paramValue === 'PERIOD' && ($period = $this->_parsePeriod($value)))
+                        if (isset($parms['VALUE']) && $parms['VALUE'] === 'PERIOD' && ($period = $this->_parsePeriod($value, $params['TZID'] ?? false)))
                         {
                             $stamp = $period['start'];
                         }
                         else
                         {
-                            $stamp = $this->_parseDateTime($value);
+                            $stamp = $this->_parseDateTime($value, $params['TZID'] ?? false);
                         }
-                        if (!is_int($stamp)) {
+                        if (!($stamp instanceof DateTime)) {
                             continue;
                         }
-                        $dates[] = array('year' => date('Y', $stamp),
-                                         'month' => date('m', $stamp),
-                                         'mday' => date('d', $stamp)
-	                        )+($paramValue === 'DATE' ? [] : [
-									     'hour' => date('H', $stamp),
-		                                 'minute' => date('i', $stamp),
-		                                 'second' => date('s', $stamp),
-	                        ]+($paramValue === 'PERIOD' ? [] : [
+                        $dates[] = array('datetime' => $stamp,
+						                 'year' => $stamp->format('Y'),
+                                         'month' => $stamp->format('m'),
+                                         'mday' => $stamp->format('d')
+	                        )+(isset($parms['VALUE']) && $parms['VALUE'] === 'DATE' ? [] : [
+							             'hour' => $stamp->format('H'),
+		                                 'minute' => $stamp->format('i'),
+		                                 'second' => $stamp->format('s'),
+	                        ]+(isset($parms['VALUE']) && $parms['VALUE'] === 'PERIOD' ? [] : [
 								'duration' => $period['duration'] ?? $period['end']-$period['start'],
 		                    ]));
                     }
@@ -1237,14 +1238,14 @@ class Horde_Icalendar
      *
      * @return array  with values for keys 'start', and either 'duration' or 'end'
      */
-    protected function _parsePeriod($text)
+    protected function _parsePeriod($text, $tzid = false)
     {
         $periodParts = explode('/', $text);
-        $start = $this->_parseDateTime($periodParts[0]);
+        $start = $this->_parseDateTime($periodParts[0], $tzid);
 
         if ($duration = $this->_parseDuration($periodParts[1])) {
             return array('start' => $start, 'duration' => $duration);
-        } elseif ($end = $this->_parseDateTime($periodParts[1])) {
+        } elseif ($end = $this->_parseDateTime($periodParts[1], $tzid)) {
             return array('start' => $start, 'end' => $end);
         }
     }
