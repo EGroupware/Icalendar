@@ -1021,7 +1021,7 @@ class Horde_Icalendar
             // Comma seperated dates.
             case 'EXDATE':
             case 'RDATE':
-                $floating = $base == 'STANDARD' || $base == 'DAYLIGHT';
+                $floating = $base == 'STANDARD' || $base == 'DAYLIGHT'|| isset($params['TZID']);
                 $dates = array();
                 foreach ($value as $date) {
                     if (isset($params['VALUE'])) {
